@@ -24,5 +24,6 @@ class UsersSignupTest < ActionDispatch::IntegrationTest
     assert_template 'users/show'
     #上のコードでは、ユーザープロフィールに関するほぼ全てafterredirectをテストできている。
     #この類のエンドツーエンドテストは、アプリケーションの重要な機能をカバーしてくれています。こういった理由が統合テストが便利だと呼ばれる所以です。
+    assert is_logged_in?
   end
 end

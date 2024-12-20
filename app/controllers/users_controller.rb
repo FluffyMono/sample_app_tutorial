@@ -11,6 +11,8 @@ class UsersController < ApplicationController
     # !!ここではstrong parameterのuser_paramsを使わないとActiveModel::ForbittenAttributes errorが起こる
     @user = User.new(user_params) # (params[:user])は on private
     if @user.save
+      reset_session #!!!!
+      log_in @user
       # flashを作成したらレイアウトをapplicationhtmlに記載
       flash[:success] = 'Welcome to the Sample App!'
       redirect_to @user
