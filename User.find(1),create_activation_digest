@@ -1,0 +1,13 @@
+=> 
+[32m#<User:0x00007c208e659e58[0m
+ id: [34m[1m1[0m,
+ name: [31m[1m"[0m[31mExample User[0m[31m[1m"[0m,
+ email: [31m[1m"[0m[31mexample@railstutorial.org[0m[31m[1m"[0m,
+ created_at: Sat, 21 Dec 2024 04:28:48.218977000 UTC +00:00,
+ updated_at: Sat, 21 Dec 2024 09:21:44.431979000 UTC +00:00,
+ password_digest: [31m[1m"[0m[31m[FILTERED][0m[31m[1m"[0m,
+ remember_digest: [31m[1m"[0m[31m$2a$12$1kazg5WrXmHDvg2twZLG.up3122Mj8n8p/p0i3kmWqQh8Hu2Cjzk6[0m[31m[1m"[0m,
+ admin: [36m[1mtrue[0m,
+ activation_digest: [36m[1mnil[0m,
+ activated: [36m[1mfalse[0m,
+ activated_at: [36m[1mnil[0m[32m>[0m
