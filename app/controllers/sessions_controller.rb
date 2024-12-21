@@ -5,10 +5,11 @@ class SessionsController < ApplicationController
     user = User.find_by(email: params[:session][:email].downcase)
 
     if user&.authenticate(params[:session][:password])
+      forwarding_url = session[:forwarding_url]
       reset_session # !!!!
       params[:session][:remember_me] == '1' ? remember(user) : forget(user)
       log_in user
-      redirect_to user # ewual to redirect_to user_url(user)
+      redirect_to forwarding_url || user
     else
       # flashだとエラー後にhomeに戻ってもそのままメッセージが表示されるのでrender前はflash.nowを使う
       flash.now[:danger] = 'Invalid email/password combination'
@@ -18,7 +19,7 @@ class SessionsController < ApplicationController
 
   def destroy
     log_out if logged_in?
-    #Turboを使うときは DELETEリクエスト後にsee other
+    # Turboを使うときは DELETEリクエスト後にsee other
     redirect_to root_url, status: :see_other
   end
 end
