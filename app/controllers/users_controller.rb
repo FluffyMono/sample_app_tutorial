@@ -12,6 +12,7 @@ class UsersController < ApplicationController
 
   def show
     @user = User.find(params[:id])
+    @microposts = @user.microposts.paginate(page: params[:page])
   end
 
   def create
@@ -54,27 +55,19 @@ class UsersController < ApplicationController
   # インデントして強調　実行順が変わるのではなく単に重要な項目を見つけやすくする意図
 
   def user_params
-    params.require(:user).permit(:name, :email, :password, :password_confirmation)
+    params.require(:user).permit(:name, :email, :password,
+                                 :password_confirmation)
   end
 
-  # beforeフィルタ
+  # beforeフィルター
 
-  # ログイン済みユーザーかどうか確認
-  def logged_in_user
-    return if logged_in?
-
-    store_location
-    flash[:danger] = 'Please log in.'
-    redirect_to login_url, status: :see_other
-  end
-
-  # 正しいユーザーかどうか確認
+  # 正しいユーザーかどうかを確認
   def correct_user
     @user = User.find(params[:id])
     redirect_to(root_url, status: :see_other) unless current_user?(@user)
   end
 
-  # 管理者かどうか確認
+  # 管理者かどうかを確認
   def admin_user
     redirect_to(root_url, status: :see_other) unless current_user.admin?
   end

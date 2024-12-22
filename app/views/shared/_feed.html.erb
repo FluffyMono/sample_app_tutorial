@@ -1,0 +1,9 @@
+<% if @feed_items.any? %>
+  <ol class="microposts">
+    <%= render @feed_items %>
+  </ol>
+  <%#pagenationで長いポスト等のフィードがうまく処理されずにルーティングエラーになる場合、
+  　 Homeページに対応するcontrollerパラメータとaction パラメータを明示的にwill_paginateに渡すことで解決%>
+  <%= will_paginate @feed_items,
+                    params: { controller: :static_pages, action: :home } %>
+<% end %>
