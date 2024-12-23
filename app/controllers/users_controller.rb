@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-  before_action :logged_in_user, only: %i[index edit update destroy]
+  before_action :logged_in_user, only: %i[index edit update destroy following followers]
   before_action :correct_user,   only: %i[edit update]
   before_action :admin_user,     only: :destroy
   def new
@@ -21,7 +21,7 @@ class UsersController < ApplicationController
     if @user.save
       @user.send_activation_email
       # flashを作成したらレイアウトをapplicationhtmlに記載
-      flash[:info] = "Please check your email to activate your account."
+      flash[:info] = 'Please check your email to activate your account.'
       redirect_to root_url
     else
       render 'new', status: :unprocessable_entity
@@ -47,6 +47,20 @@ class UsersController < ApplicationController
     else
       render 'edit', status: :unprocessable_entity
     end
+  end
+
+  def following
+    @title = 'Following'
+    @user  = User.find(params[:id])
+    @users = @user.following.paginate(page: params[:page])
+    render 'show_follow'
+  end
+
+  def followers
+    @title = 'Followers'
+    @user  = User.find(params[:id])
+    @users = @user.followers.paginate(page: params[:page])
+    render 'show_follow'
   end
 
   private

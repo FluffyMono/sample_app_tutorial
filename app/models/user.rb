@@ -1,6 +1,20 @@
 class User < ApplicationRecord
   attr_accessor :remember_token, :activation_token, :reset_token
   has_many :microposts, dependent: :destroy #has connection to posts and they would be destroyed with an user.
+  
+  has_many :active_relationships, class_name:  "Relationship",
+  #データベースの2つのテーブルを繋ぐときのid 外部キー
+                                  foreign_key: "follower_id",
+                                  dependent:   :destroy
+  #followedだからpassive_relationships
+  has_many :passive_relationships, class_name:  "Relationship",
+                                  foreign_key: "followed_id",
+                                  dependent:   :destroy
+
+  #   has_many :singular, through: :table_name, source(optional): :overridden original id name                            
+  has_many :following, through: :active_relationships, source: :followed
+  has_many :followers, through: :passive_relationships, source: :follower
+
   before_save   :downcase_email
   before_create :create_activation_digest
   validates :name, presence: true, length: { maximum: 50 }
@@ -82,11 +96,35 @@ class User < ApplicationRecord
   end
 
   
-  # 試作feedの定義
-  # 完全な実装は次章の「ユーザーをフォローする」を参照
+   # ユーザーのステータスフィードを返す
   def feed
-    Micropost.where("user_id = ?", id)
+    #Micropost.where("user_id IN (?) OR user_id = ?", following_ids, id)
+    #scalable method using subselect
+    ##同じ変数を複数の場所に挿入したい場合は、後者のハッシュ形式の構文の方がより便利
+    following_ids = "SELECT followed_id FROM relationships
+                     WHERE  follower_id = :user_id"
+    Micropost.where("user_id IN (#{following_ids})
+                     OR user_id = :user_id", user_id: id)
+                     #マイクロポストを取り出す1件のクエリの中にユーザー、および添付画像を取り出すクエリも含めることで、フィードで必要なすべての情報を1件のクエリで取得する
+                     .includes(:user, image_attachment: :blob)
   end
+
+  # ユーザーをフォローする
+  def follow(other_user)
+    # << operator is used to add other_user to the following collection.💡
+    following << other_user unless self == other_user
+  end
+
+  # ユーザーをフォロー解除する
+  def unfollow(other_user)
+    following.delete(other_user)
+  end
+
+  # 現在のユーザーが他のユーザーをフォローしていればtrueを返す
+  def following?(other_user)
+    following.include?(other_user)
+  end
+
 
   private
 
