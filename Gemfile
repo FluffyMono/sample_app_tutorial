@@ -24,6 +24,7 @@ gem 'turbo-rails', '1.4.0'
 gem 'will_paginate', '3.3.1'
 
 group :development, :test do
+  
   gem 'debug', '1.7.1', platforms: %i[mri mingw x64_mingw]
 end
 
@@ -45,5 +46,7 @@ group :test do
   gem 'webdrivers',               '5.2.0'
 end
 
+
+
 # Windows ではタイムゾーン情報用の tzinfo-data gem を含める必要があります
-# gem "tzinfo-data", platforms: %i[ mingw mswin x64_mingw jruby ]
+gem "tzinfo-data", platforms: %i[ mingw mswin x64_mingw jruby ]
