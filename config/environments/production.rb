@@ -69,7 +69,7 @@ Rails.application.configure do
   # !! for production environment and mailgun
   config.action_mailer.raise_delivery_errors = true
   config.action_mailer.delivery_method = :smtp
-  host = 'https://sample_app_tutorial.onrender.com'
+  host = 'https://sample-app-tutorial-41dw.onrender.com'
   config.action_mailer.default_url_options = { host: host }
   ActionMailer::Base.smtp_settings = {
     port: 587,
