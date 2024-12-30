@@ -1,17 +1,18 @@
 class User < ApplicationRecord
   attr_accessor :remember_token, :activation_token, :reset_token
-  has_many :microposts, dependent: :destroy #has connection to posts and they would be destroyed with an user.
-  
-  has_many :active_relationships, class_name:  "Relationship",
-  #データベースの2つのテーブルを繋ぐときのid 外部キー
-                                  foreign_key: "follower_id",
-                                  dependent:   :destroy
-  #followedだからpassive_relationships
-  has_many :passive_relationships, class_name:  "Relationship",
-                                  foreign_key: "followed_id",
-                                  dependent:   :destroy
 
-  #   has_many :singular, through: :table_name, source(optional): :overridden original id name                            
+  has_many :microposts, dependent: :destroy # has connection to posts and they would be destroyed with an user.
+
+  has_many :active_relationships, class_name: 'Relationship',
+                                  # データベースの2つのテーブルを繋ぐときのid 外部キー
+                                  foreign_key: 'follower_id',
+                                  dependent: :destroy
+  # followedだからpassive_relationships
+  has_many :passive_relationships, class_name: 'Relationship',
+                                   foreign_key: 'followed_id',
+                                   dependent: :destroy
+
+  #   has_many :singular, through: :table_name, source(optional): :overridden original id name
   has_many :following, through: :active_relationships, source: :followed
   has_many :followers, through: :passive_relationships, source: :follower
 
@@ -68,9 +69,14 @@ class User < ApplicationRecord
   end
 
   # アカウントを有効にする
+  # def activate
+  #   update_attribute(:activated, true)
+  #   update_attribute(:activated_at, Time.zone.now)
+  # end
+  # !!!!!! Used update. update_attribute skips validation and
+  # doesn'twrap the updates in a database transaction
   def activate
-    update_attribute(:activated,    true)
-    update_attribute(:activated_at, Time.zone.now)
+    update(activated: true, activated_at: Time.zone.now)
   end
 
   # 有効化用のメールを送信する
@@ -95,18 +101,17 @@ class User < ApplicationRecord
     reset_sent_at < 2.hours.ago
   end
 
-  
-   # ユーザーのステータスフィードを返す
+  # ユーザーのステータスフィードを返す
   def feed
-    #Micropost.where("user_id IN (?) OR user_id = ?", following_ids, id)
-    #scalable method using subselect
-    ##同じ変数を複数の場所に挿入したい場合は、後者のハッシュ形式の構文の方がより便利
+    # Micropost.where("user_id IN (?) OR user_id = ?", following_ids, id)
+    # scalable method using subselect
+    # #同じ変数を複数の場所に挿入したい場合は、後者のハッシュ形式の構文の方がより便利
     following_ids = "SELECT followed_id FROM relationships
                      WHERE  follower_id = :user_id"
     Micropost.where("user_id IN (#{following_ids})
                      OR user_id = :user_id", user_id: id)
-                     #マイクロポストを取り出す1件のクエリの中にユーザー、および添付画像を取り出すクエリも含めることで、フィードで必要なすべての情報を1件のクエリで取得する
-                     .includes(:user, image_attachment: :blob)
+             # マイクロポストを取り出す1件のクエリの中にユーザー、および添付画像を取り出すクエリも含めることで、フィードで必要なすべての情報を1件のクエリで取得する
+             .includes(:user, image_attachment: :blob)
   end
 
   # ユーザーをフォローする
@@ -124,7 +129,6 @@ class User < ApplicationRecord
   def following?(other_user)
     following.include?(other_user)
   end
-
 
   private
 
