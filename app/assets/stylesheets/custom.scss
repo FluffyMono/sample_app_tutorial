@@ -1,5 +1,12 @@
 @import "bootstrap-sprockets";
 @import "bootstrap";
+/* !!!! Enable dropdown menu on hover */
+.navbar .dropdown:hover > .dropdown-menu {
+  display: block;
+  position: absolute; /* Ensures proper placement */
+  z-index: 1000; /* Ensures it appears above other elements */
+}
+
 
 /* mixins, variables, etc. */
 
